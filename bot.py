@@ -10,10 +10,12 @@ from cogs.util import pyson
 
 
 def get_prefix(bot, message):
-    prefixes = ['?', '!']
+    prefix = bot.config.data.get('servers').get(str(message.guild.id)).get('prefix')
+    if not prefix:
+        prefix = '!'
     if not message.guild:
         return '?'
-    return commands.when_mentioned_or(*prefixes)(bot, message)
+    return commands.when_mentioned_or(*prefix)(bot, message)
 
 
 initial_extensions = ['cogs.util.owner']
@@ -28,7 +30,7 @@ async def on_ready():
 
 
 @bot.event
-async def on_command_error(error):
+async def on_command_error(ctx, error):
     if not isinstance(error, commands.errors.CheckFailure):
         try:
             raise error
