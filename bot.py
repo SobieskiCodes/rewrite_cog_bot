@@ -6,7 +6,7 @@ from pathlib import Path
 if not os.path.isdir('cogs/data'):
     os.makedirs('cogs/data')
 from cogs.util import pyson
-
+version = '0.1.0'
 
 def get_prefix(bot, message):
     prefix = bot.config.data.get('servers').get(str(message.guild.id)).get('prefix')
@@ -17,8 +17,21 @@ def get_prefix(bot, message):
     return commands.when_mentioned_or(*prefix)(bot, message)
 
 
-bot = commands.AutoShardedBot(command_prefix=get_prefix, formatter=None, description='A Rewrite Cog Example',
-                              pm_help=False)
+bot = commands.AutoShardedBot(command_prefix=get_prefix, formatter=None, description=f'v{version} IAmGroot', pm_help=False)
+
+
+@bot.event
+async def on_guild_join(guild):
+    new_guild = {"None": True, "OwnerCog": True, "GuildOwnerCog": True, "prefix": "!"}
+    bot.config.data['servers'][str(guild.id)] = new_guild
+    bot.config.save()
+
+
+@bot.event
+async def on_guild_remove(guild):
+    bot.config.data['servers'].pop(str(guild.id), None)
+    bot.config.save()
+
 
 @bot.event
 async def on_ready():
