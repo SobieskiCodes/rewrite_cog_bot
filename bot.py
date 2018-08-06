@@ -3,8 +3,6 @@ import os
 import traceback
 from discord.ext import commands
 from pathlib import Path
-if not os.path.isdir('cogs/data'):
-    os.makedirs('cogs/data')
 from cogs.util import pyson
 version = '0.1.0'
 
