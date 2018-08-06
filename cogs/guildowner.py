@@ -55,7 +55,7 @@ class GuildOwnerCog:
             await ctx.send(f'Available cogs are: {cog_list}')
             return
 
-        if cog in config.data.get('servers').get(str(ctx.guild.id)):
+        if cog in self.bot.config.data.get('servers').get(str(ctx.guild.id)):
             self.bot.config.data['servers'][str(ctx.guild.id)].pop(cog, None)
             self.bot.config.save()
             await ctx.send(f'{cog} Disabled.')
@@ -80,7 +80,6 @@ class GuildOwnerCog:
             self.bot.config.data['servers'][str(ctx.guild.id)]['prefix'] = prefix
             self.bot.config.save()
             await ctx.send(f'Prefix updated to {prefix}')
-
 
 
 def setup(bot):
