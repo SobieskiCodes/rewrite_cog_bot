@@ -8,12 +8,11 @@ if not os.path.isdir('cogs/data'):
 from cogs.util import pyson
 version = '0.1.0'
 
+
 def get_prefix(bot, message):
     prefix = bot.config.data.get('servers').get(str(message.guild.id)).get('prefix')
     if not prefix:
         prefix = '!'
-    if not message.guild:
-        return '?'
     return commands.when_mentioned_or(*prefix)(bot, message)
 
 
@@ -36,7 +35,7 @@ async def on_guild_remove(guild):
 @bot.event
 async def on_ready():
     print(f'\n\nLogged in as: {bot.user.name} - {bot.user.id}')
-    game = discord.Game("with building the cogs")
+    game = discord.Game(f"Mention me for prefix")
     await bot.change_presence(status=discord.Status.idle, activity=game)
 
 
@@ -59,6 +58,15 @@ async def __before_invoke(ctx):
         cog_name = "None"
     if cog_name in bot.config.data.get('servers').get(str(ctx.guild.id)):
         return True
+
+
+@bot.event
+async def on_message(message):
+    if any(mention.name == bot.user.name for mention in message.mentions):
+        if len(message.mentions) == 1:
+            prefix = bot.config.data.get('servers').get(str(message.guild.id)).get('prefix')
+            await message.channel.send(f'my prefix is {prefix}')
+    await bot.process_commands(message)
 
 
 def load_extensions():
