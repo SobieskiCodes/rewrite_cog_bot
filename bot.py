@@ -8,7 +8,6 @@ if not os.path.isdir('cogs/data'):
 from cogs.util import pyson
 
 
-
 def get_prefix(bot, message):
     prefix = bot.config.data.get('servers').get(str(message.guild.id)).get('prefix')
     if not prefix:
@@ -18,9 +17,8 @@ def get_prefix(bot, message):
     return commands.when_mentioned_or(*prefix)(bot, message)
 
 
-initial_extensions = ['cogs.util.owner']
-bot = commands.Bot(command_prefix=get_prefix, description='A Rewrite Cog Example')
-
+bot = commands.AutoShardedBot(command_prefix=get_prefix, formatter=None, description='A Rewrite Cog Example',
+                              pm_help=False)
 
 @bot.event
 async def on_ready():
