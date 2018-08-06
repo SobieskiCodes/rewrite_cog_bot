@@ -1,5 +1,4 @@
 from discord.ext import commands
-import os
 from cogs.util import pyson
 config = pyson.Pyson('data/config/startup.json')
 
@@ -19,13 +18,17 @@ class GuildOwnerCog:
     @commands.command()
     @is_owner()
     async def enable(self, ctx, cog: str=None):
-        '''Cogs are case senstive'''
+        ''': Cogs are case senstive'''
         if not cog:
             cog_list = []
             for cog in self.bot.cogs:
                 cog_list.append(cog)
+            contains = ['OwnerCog', 'GuildOwnerCog']
+            for x in contains:
+                if x in cog_list:
+                    cog_list.remove(x)
 
-            await ctx.send(f'Available cogs are: {cog_list[2:]}')
+            await ctx.send(f'Available cogs are: {cog_list}')
             return
 
         if cog in (cog for cog in self.bot.cogs):
@@ -40,15 +43,17 @@ class GuildOwnerCog:
     @commands.command()
     @is_owner()
     async def disable(self, ctx, cog: str = None):
-        '''Cogs are case senstive'''
+        ''': Cogs are case senstive'''
         if not cog:
             cog_list = []
             for cog in self.bot.cogs:
                 cog_list.append(cog)
-
-            await ctx.send(f'Available cogs are: {cog_list[2:]}')
+            contains = ['OwnerCog', 'GuildOwnerCog']
+            for x in contains:
+                if x in cog_list:
+                    cog_list.remove(x)
+            await ctx.send(f'Available cogs are: {cog_list}')
             return
-
 
         if cog in config.data.get('servers').get(str(ctx.guild.id)):
             self.bot.config.data['servers'][str(ctx.guild.id)].pop(cog, None)
@@ -62,6 +67,7 @@ class GuildOwnerCog:
     @commands.command(aliases=['sp'])
     @is_owner()
     async def set_prefix(self, ctx, prefix: str=None):
+        ''': Change the prefix of the bot, up to two chars.'''
         if not prefix:
             prefix = self.bot.config.data.get('servers').get(str(ctx.guild.id)).get('prefix')
             await ctx.send(f'current prefix is {prefix}')
