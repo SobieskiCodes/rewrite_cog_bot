@@ -39,14 +39,10 @@ async def on_ready():
 
 @bot.event
 async def on_command_error(ctx, error):
-    if not isinstance(error, commands.errors.CheckFailure):
-        try:
-            raise error
-        except Exception as error:
-            tb = traceback.format_exc()
-            print(error, tb)
+    if isinstance(error, commands.errors.CheckFailure) or isinstance(error, commands.errors.CommandNotFound):
+        return
     else:
-        pass
+        raise error
 
 
 @bot.check
@@ -62,8 +58,9 @@ async def __before_invoke(ctx):
 async def on_message(message):
     if any(mention.name == bot.user.name for mention in message.mentions):
         if len(message.mentions) == 1:
-            prefix = bot.config.data.get('servers').get(str(message.guild.id)).get('prefix')
-            await message.channel.send(f'my prefix is {prefix}')
+            if message.content == f'<@{message.raw_mentions[0]}>':
+                prefix = bot.config.data.get('servers').get(str(message.guild.id)).get('prefix')
+                await message.channel.send(f'my prefix is {prefix}')
     await bot.process_commands(message)
 
 
@@ -87,6 +84,7 @@ def load_extensions():
 
 
 bot.config = pyson.Pyson('data/config/startup.json')
+servers = bot.config.data.get('servers')
 token = bot.config.data.get('config').get('token')
 load_extensions()
 bot.run(token, bot=True, reconnect=True)
